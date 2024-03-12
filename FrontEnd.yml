@@ -1,0 +1,34 @@
+trigger:
+  branches:
+    include:
+    - master
+stages:
+- stage: __default
+  jobs:
+  - job: Job
+    pool:
+      vmImage: ubuntu-latest
+    steps:
+    - task: NodeTool@0
+      inputs:
+        versionSpec: '10.x'
+      displayName: 'Install Node.js'
+    - task: CmdLine@2
+      displayName: 'npm install and build'
+      inputs:
+        script: |
+          npm install
+          npm run build
+    - task: CopyFiles@2
+      inputs:
+        SourceFolder: '$(System.DefaultWorkingDirectory)'
+        Contents: 'build/**'
+        TargetFolder: '$(Build.ArtifactStagingDirectory)'
+      displayName: 'Copy build output to Artifact Staging'
+    - task: PublishBuildArtifacts@1
+      displayName: 'Publish Artifacts'
+      inputs:
+        PathtoPublish: 'build'
+        ArtifactName: 'drop'
+        publishLocation: 'Container'
+
