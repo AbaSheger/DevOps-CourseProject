@@ -35,6 +35,45 @@ This project demonstrates the implementation of a complete e-commerce applicatio
 - Verified the complete e-shop application functionality with products displaying correctly
 - Managed the automated deployment of changes through the CI/CD pipeline
 
+## Project Architecture
+
+```mermaid
+flowchart TB
+    subgraph "Azure DevOps"
+        direction TB
+        Git["Git Repository"]
+        Build1["Frontend Build Pipeline"]
+        Release1["Frontend Release Pipeline"]
+        Build2["Backend Build Pipeline"]
+        Release2["Backend Release Pipeline"]
+        
+        Git --> Build1
+        Git --> Build2
+        Build1 --> Release1
+        Build2 --> Release2
+    end
+    
+    subgraph "Azure Services"
+        direction TB
+        ACR["Azure Container Registry"]
+        AppS1["App Service (Frontend)"]
+        AppS2["App Service (Backend)"]
+        
+        Build2 --> ACR
+        Release1 --> AppS1
+        Release2 --> AppS2
+        ACR --> AppS2
+    end
+    
+    AppS1 <-.HTTPS API Calls.-> AppS2
+    
+    subgraph "User"
+        Browser["Web Browser"]
+    end
+    
+    Browser <--> AppS1
+```
+
 ## Challenges and Solutions
 - Configured Docker builds within the Azure DevOps pipeline
 - Managed inter-service communication between separately deployed frontend and backend
